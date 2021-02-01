@@ -76,7 +76,7 @@ pipeline {
                             storage1cPath = storages1cPathList[i]
                             testbase = "test_${templateDb}"
                             testbaseConnString = projectHelpers.getConnString(server1c, testbase, agent1cPort)
-                            backupPath = "//10.10.11.199/backup/1с_backup/jenkins/temp_${templateDb}_${utils.currentDateStamp()}"
+                            backupPath = "/jenkins/temp_${templateDb}_${utils.currentDateStamp()}"
 
                             // 1. Удаляем тестовую базу из кластера (если он там была) и очищаем клиентский кеш 1с
                             dropDbTasks["dropDbTask_${testbase}"] = dropDbTask(
