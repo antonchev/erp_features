@@ -233,9 +233,10 @@ def restoreTask(serverSql, infobase, backupPath, sqlUser, sqlPwd) {
         stage("Востановление ${infobase} бекапа") {
             timestamps {
                 sqlUtils = new SqlUtils()
-
+                utils = new Utils()
+                date = utils.currentDateStampminusday()
                 sqlUtils.createEmptyDb(serverSql, infobase, sqlUser, sqlPwd)
-                sqlUtils.restoreDb(serverSql, infobase, backupPath, sqlUser, sqlPwd)
+                sqlUtils.restoreDb(serverSql, infobase, backupPath, sqlUser, sqlPwd,date)
             }
         }
     }
