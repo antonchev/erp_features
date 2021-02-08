@@ -56,7 +56,7 @@ pipeline {
                         serverSql = serverSql.isEmpty() ? "localhost" : serverSql
                         server1cPort = server1cPort.isEmpty() ? "1540" : server1cPort
                         agent1cPort = agent1cPort.isEmpty() ? "1541" : agent1cPort
-                        env.sqlUser = sqlUser.isEmpty() ? "sa" : sqlUser
+                        env.sqlUser = sqlUser.isEmpty() ? "sas" : sqlUser
                         testbase = null
 
                         // создаем пустые каталоги
