@@ -72,7 +72,8 @@ def currentDateStampminusday() {
     dateFormat = new SimpleDateFormat("yyyyMMdddss");
 
 
-    date = LocalDateTime.now().minusDays(7);
+    string date = LocalDateTime.now().minusDays(7);
+    date.substring(0,11)
     return  date;
 }
 
