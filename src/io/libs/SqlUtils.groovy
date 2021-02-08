@@ -82,7 +82,7 @@ def createEmptyDb(dbServer, infobase, sqlUser, sqlPwd) {
     }
 
     utils = new Utils()
-    returnCode = utils.cmd("sqlcmd -S ${dbServer} ${sqlUserpath} ${sqlPwdPath} -i \"${env.WORKSPACE}/copy_etalon/error_create.sql\" -b -v restoreddb =${infobase}")
+    returnCode = utils.cmd("sqlcmd -S ${dbServer} -i \"${env.WORKSPACE}/copy_etalon/error_create.sql\" -b -v restoreddb =${infobase}")
     if (returnCode != 0) {
         utils.raiseError("Возникла ошибка при создании пустой sql базы на  ${dbServer}\\${infobase}. Для подробностей смотрите логи")
     }
@@ -113,7 +113,7 @@ def restoreDb(dbServer, dbname_to, dbname_from, sqlUser, sqlPwd) {
         sqlPwdPath = "-P ${sqlPwd}"
     }
 
-    returnCode = utils.cmd("sqlcmd -S ${dbServer} ${sqlUserpath} ${sqlPwdPath} -i \"${env.WORKSPACE}/copy_etalon/restore-base.sql\" -b -v dbname_to =${dbname_to} -v dbname_from=\"${dbname_from}\"")
+    returnCode = utils.cmd("sqlcmd -S ${dbServer} -i \"${env.WORKSPACE}/copy_etalon/restore-base.sql\" -b -v dbname_to =${dbname_to} -v dbname_from=\"${dbname_from}\"")
     if (returnCode != 0) {
          utils.raiseError("Возникла ошибка при восстановлении базы из sql бекапа ${dbServer}\\${infobase}. Для подробностей смотрите логи")
     } 
