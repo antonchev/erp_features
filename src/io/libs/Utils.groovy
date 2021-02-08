@@ -72,7 +72,7 @@ def currentDateStampminusday() {
     dateFormat = new SimpleDateFormat("yyyyMMdddss");
 
     LocalDateTime date = LocalDateTime.now();
-    return  dateFormat.format(date);
+    return  date;
 }
 
 
