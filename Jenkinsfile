@@ -32,6 +32,7 @@ pipeline {
         string(defaultValue: "${env.storagePwd}", description: 'Необязательный. Пароль администратора хранилищ 1c', name: 'storagePwd')
     }
 
+
     agent {
         label "${(env.jenkinsAgent == null || env.jenkinsAgent == 'null') ? "master" : env.jenkinsAgent}"
     }
@@ -89,19 +90,11 @@ pipeline {
                                 sqluser,
                                 sqlPwd
                             )
-                            // 2. Делаем sql бекап эталонной базы, которую будем загружать в тестовую базу
-                            backupTasks["backupTask_${templateDb}"] = backupTask(
-                                serverSql, 
-                                templateDb, 
-                                backupPath,
-                                sqlUser,
-                                sqlPwd
-                            )
                             // 3. Загружаем sql бекап эталонной базы в тестовую
                             restoreTasks["restoreTask_${testbase}"] = restoreTask(
                                 serverSql, 
                                 testbase, 
-                                backupPath,
+                                templateDb,
                                 sqlUser,
                                 sqlPwd
                             )

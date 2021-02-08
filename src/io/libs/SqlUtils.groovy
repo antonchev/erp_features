@@ -98,7 +98,7 @@ def createEmptyDb(dbServer, infobase, sqlUser, sqlPwd) {
 //  sqlUser - Необязательный. админ sql базы
 //  sqlPwd - Необязательный. пароль админа sql базы
 //
-def restoreDb(dbServer, infobase, backupPath, sqlUser, sqlPwd) {
+def restoreDb(dbServer, dbname_to, dbname_from, sqlUser, sqlPwd) {
     utils = new Utils()
 
     sqlUserpath = "" 
@@ -113,7 +113,7 @@ def restoreDb(dbServer, infobase, backupPath, sqlUser, sqlPwd) {
         sqlPwdPath = "-P ${sqlPwd}"
     }
 
-    returnCode = utils.cmd("sqlcmd -S ${dbServer} ${sqlUserpath} ${sqlPwdPath} -i \"${env.WORKSPACE}/copy_etalon/restore.sql\" -b -v restoreddb =${infobase} -v bakfile=\"${backupPath}\"")
+    returnCode = utils.cmd("sqlcmd -S ${dbServer} ${sqlUserpath} ${sqlPwdPath} -i \"${env.WORKSPACE}/copy_etalon/restore-base.sql\" -b -v dbname_to =${dbname_to} -v dbname_from=\"${dbname_from}\"")
     if (returnCode != 0) {
          utils.raiseError("Возникла ошибка при восстановлении базы из sql бекапа ${dbServer}\\${infobase}. Для подробностей смотрите логи")
     } 
