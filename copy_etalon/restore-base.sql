@@ -8,8 +8,8 @@ DECLARE @DBName_From as nvarchar(40)
 set @DBName_From = '$(dbname_from)'
 DECLARE @DBName_To as nvarchar(40)
 set @DBName_To = '$(dbname_to)'
---DECLARE @DBdate as nvarchar(40)
---set @DBdate = '$(dbdate)'
+DECLARE @DBdate as nvarchar(40)
+set @DBdate = '$(dbdate)'
 
 SELECT
 	backupset.backup_start_date,
