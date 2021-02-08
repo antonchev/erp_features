@@ -4,6 +4,7 @@ import java.util.Date;
 import java.time.LocalDateTime;
 import java.text.SimpleDateFormat;
 import groovy.json.JsonSlurper
+import java.time.format.DateTimeFormatter
 
 // Выполняет команду в среде ОС Windows (batch) или Linux (bash) и возвращает статус операции
 //
@@ -73,7 +74,7 @@ def currentDateStampminusday() {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-  
+
 
     date = LocalDateTime.now().minusDays(7);
     formattedDateTime = date.format(formatter);
