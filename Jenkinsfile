@@ -94,7 +94,7 @@ pipeline {
                                 sqlPwd
                             )
                                for (j = 0;  j < 3; j++) {
-                                                         if (j==0) {var_steps=7} else if (j==1) {var_steps=14} 
+                                                         if (j==0) {var_steps=30} else if (j==1) {var_steps=14} else if (j==2) {var_steps=7}
                             // 3. Загружаем sql бекап эталонной базы в тестовую
                             restoreTasks["restoreTask_${testbase}"] = restoreTask(
                                 serverSql, 
