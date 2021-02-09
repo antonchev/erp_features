@@ -93,6 +93,7 @@ pipeline {
                                 sqluser,
                                 sqlPwd
                             )
+                               script {
                                for (j = 0;  j < 3; j++) {
                                                          if (j==0) {var_steps=30} else if (j==1) {var_steps=14} else if (j==2) {var_steps=7}
                             // 3. Загружаем sql бекап эталонной базы в тестовую
@@ -103,7 +104,7 @@ pipeline {
                                 sqlUser,
                                 sqlPwd,
                                 var_steps  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
-                            )}
+                            )}}
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
                                 "${server1c}:${agent1cPort}",
