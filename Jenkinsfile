@@ -92,6 +92,7 @@ pipeline {
                                 sqluser,
                                 sqlPwd
                             )
+                             script {
                              for (j = 0;  j < 3; i++) {
                              if (j==0) {var_steps = '7'} else if (j==1) {var_steps = '14'} else if (j==2) {var_steps = '30'}
 
@@ -129,10 +130,10 @@ pipeline {
                                 admin1cUser, 
                                 admin1cPwd,
                                 testbaseConnString
-                        )
+                            )
                         }
                       }
-
+                    }
                         parallel dropDbTasks
                         parallel backupTasks
                         parallel restoreTasks
