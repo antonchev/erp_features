@@ -12,10 +12,7 @@ def dropDbTasks = [:]
 def createDbTasks = [:]
 def runHandlers1cTasks = [:]
 def updateDbTasks = [:]
-def var_steps = [7,14,30];
-
-
-
+def var_steps = [7,14,30]
 pipeline {
 
     parameters {
@@ -51,7 +48,7 @@ pipeline {
                     script {
                         templatebasesList = utils.lineToArray(templatebases.toLowerCase())
                         storages1cPathList = utils.lineToArray(storages1cPath.toLowerCase())
-                        backupdayslist = utils.lineToArray(var_steps.toLowerCase())
+
                         if (storages1cPathList.size() != 0) {
                             assert storages1cPathList.size() == templatebasesList.size()
                         }
@@ -80,7 +77,6 @@ pipeline {
                              for (j = 0;  j < 3; j++) {
                             templateDb = templatebasesList[i]
                             storage1cPath = storages1cPathList[i]
-
                             testbase = "test_${templateDb}"
                             testbaseConnString = projectHelpers.getConnString(server1c, testbase, agent1cPort)
                             backupPath = "${env.WORKSPACE}/build/temp_${templateDb}_${utils.currentDateStamp()}"
@@ -97,8 +93,6 @@ pipeline {
                                 sqlPwd
                             )
 
-
-
                             // 3. Загружаем sql бекап эталонной базы в тестовую
                             restoreTasks["restoreTask_${testbase}"] = restoreTask(
                                 serverSql, 
@@ -106,7 +100,7 @@ pipeline {
                                 templateDb,
                                 sqlUser,
                                 sqlPwd,
-                             var_steps[j]// количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
+                                var_steps[j]  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
                             )
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
