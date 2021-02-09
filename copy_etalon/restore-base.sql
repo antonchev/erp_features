@@ -23,7 +23,7 @@ FROM msdb.dbo.backupset AS backupset
 	ON backupset.media_set_id = backupmediafamily.media_set_id
 WHERE backupset.database_name = @DBName_From
 	and backupset.backup_start_date < @DBdate +' 23:59:00'
-	and backupset.backup_start_date > @DBdate +' 00:00:00' 
+	and backupset.backup_start_date > @DBdate +' 00:00:00'
 	and backupset.is_copy_only = 0 -- флаг "Только резервное копирование"
 	and backupset.is_snapshot = 0 -- флаг "Не snapshot"
 	and (backupset.description is null or backupset.description not like 'Image-level backup') -- Защита от Veeam Backup & Replication
