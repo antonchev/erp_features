@@ -75,7 +75,8 @@ pipeline {
                     script {
 
                         for (i = 0;  i < templatebasesList.size(); i++) {
-                             for (j = 0;  j < templatebasesList.size(); j++) {
+                             for (j = 0;  j < 3; j++) {
+                             if (j==0) {var_steps='7'} else if (j==1) {var_steps='14'} else if (j==2) {var_steps='30'}
                             templateDb = templatebasesList[i]
                             storage1cPath = storages1cPathList[i]
                             testbase = "test_${templateDb}"
@@ -100,7 +101,7 @@ pipeline {
                                 templateDb,
                                 sqlUser,
                                 sqlPwd,
-                                8  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
+                                var_steps  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
                             )
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
