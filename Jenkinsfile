@@ -125,12 +125,12 @@ pipeline {
 
 }
 
-                        dropDbTasks
-                        backupTasks
-                        restoreTasks
-                        createDbTasks
-                        updateDbTasks
-                        runHandlers1cTasks
+                        parallel dropDbTasks
+                        parallel backupTasks
+                        parallel restoreTasks
+                        parallel createDbTasks
+                        parallel updateDbTasks
+
                     }
                 }
             }
@@ -198,7 +198,7 @@ def backupTask(serverSql, infobase, backupPath, sqlUser, sqlPwd) {
 
 def restoreTask(serverSql, infobase, backupPath, sqlUser, sqlPwd,day) {
     return {
-        stage("Востановление ${infobase} бекапа") {
+        stage("Востановление ${infobase} бекапа ${days}") {
             timestamps {
                 sqlUtils = new SqlUtils()
                 utils = new Utils()
