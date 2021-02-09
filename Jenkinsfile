@@ -74,13 +74,13 @@ pipeline {
                     script {
 
                         for (i = 0;  i < templatebasesList.size(); i++) {
-                             for (j = 0;  j < 3; j++) {
+                             for (j = 0;  j < var_steps.size(); j++) {
                             templateDb = templatebasesList[i]
                             storage1cPath = storages1cPathList[i]
                             testbase = "test_${templateDb}"
                             testbaseConnString = projectHelpers.getConnString(server1c, testbase, agent1cPort)
                             backupPath = "${env.WORKSPACE}/build/temp_${templateDb}_${utils.currentDateStamp()}"
-
+                            days = var_steps[j]
                             // 1. Удаляем тестовую базу из кластера (если он там была) и очищаем клиентский кеш 1с
                             dropDbTasks["dropDbTask_${testbase}"] = dropDbTask(
                                 server1c, 
@@ -100,7 +100,7 @@ pipeline {
                                 templateDb,
                                 sqlUser,
                                 sqlPwd,
-                                var_steps[j]  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
+                                days  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
                             )
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
