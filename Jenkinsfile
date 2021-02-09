@@ -124,12 +124,7 @@ pipeline {
                                 admin1cPwd
                             )
                             // 6. Запускаем внешнюю обработку 1С, которая очищает базу от всплывающего окна с тем, что база перемещена при старте 1С
-                            runHandlers1cTasks["runHandlers1cTask_${testbase}"] = runHandlers1cTask(
-                                testbase, 
-                                admin1cUser, 
-                                admin1cPwd,
-                                testbaseConnString
-                            )
+                         
                         }
                       }
 
