@@ -135,7 +135,7 @@ pipeline {
 
                         parallel dropDbTasks
                         parallel backupTasks
-                        parallel restoreTasks
+                       
                         parallel createDbTasks
                         parallel updateDbTasks
                         parallel runHandlers1cTasks
@@ -143,7 +143,7 @@ pipeline {
                 }
             }
         }
-        
+
     }   
     post {
         always {
