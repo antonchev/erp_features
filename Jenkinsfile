@@ -12,7 +12,9 @@ def dropDbTasks = [:]
 def createDbTasks = [:]
 def runHandlers1cTasks = [:]
 def updateDbTasks = [:]
-def var_steps = 7,14,30
+def int[] var_steps = {7,14,30};
+
+
 
 pipeline {
 
@@ -78,7 +80,7 @@ pipeline {
                              for (j = 0;  j < 3; j++) {
                             templateDb = templatebasesList[i]
                             storage1cPath = storages1cPathList[i]
-                            days =  backupdayslist[j]
+
                             testbase = "test_${templateDb}"
                             testbaseConnString = projectHelpers.getConnString(server1c, testbase, agent1cPort)
                             backupPath = "${env.WORKSPACE}/build/temp_${templateDb}_${utils.currentDateStamp()}"
@@ -104,7 +106,7 @@ pipeline {
                                 templateDb,
                                 sqlUser,
                                 sqlPwd,
-                             days// количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
+                             var_steps[j]// количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
                             )
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
