@@ -69,14 +69,14 @@ def currentDateStamp() {
     date = new Date();
     return  dateFormat.format(date);
 }
-def currentDateStampminusday() {
+def currentDateStampminusday(day) {
     dateFormat = new SimpleDateFormat("yyyyMMdddss");
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
 
-    date = LocalDateTime.now().minusDays(12);
+    date = LocalDateTime.now().minusDays(day);
     formattedDateTime = date.format(formatter);
     return  formattedDateTime;
 }

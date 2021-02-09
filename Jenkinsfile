@@ -96,7 +96,8 @@ pipeline {
                                 testbase, 
                                 templateDb,
                                 sqlUser,
-                                sqlPwd
+                                sqlPwd,
+                                1
                             )
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
@@ -228,13 +229,13 @@ def backupTask(serverSql, infobase, backupPath, sqlUser, sqlPwd) {
     }
 }
 
-def restoreTask(serverSql, infobase, backupPath, sqlUser, sqlPwd) {
+def restoreTask(serverSql, infobase, backupPath, sqlUser, sqlPwd,day) {
     return {
         stage("Востановление ${infobase} бекапа") {
             timestamps {
                 sqlUtils = new SqlUtils()
                 utils = new Utils()
-                date = utils.currentDateStampminusday()
+                date = utils.currentDateStampminusday(day)
                 sqlUtils.createEmptyDb(serverSql, infobase, sqlUser, sqlPwd)
                 sqlUtils.restoreDb(serverSql, infobase, backupPath, sqlUser, sqlPwd,date)
             }
