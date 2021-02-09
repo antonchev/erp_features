@@ -12,7 +12,7 @@ def dropDbTasks = [:]
 def createDbTasks = [:]
 def runHandlers1cTasks = [:]
 def updateDbTasks = [:]
-def var_steps
+def var_steps = '7,14,30'
 
 pipeline {
 
@@ -49,7 +49,7 @@ pipeline {
                     script {
                         templatebasesList = utils.lineToArray(templatebases.toLowerCase())
                         storages1cPathList = utils.lineToArray(storages1cPath.toLowerCase())
-
+                        backupdayslist = utils.lineToArray(var_steps.toLowerCase())
                         if (storages1cPathList.size() != 0) {
                             assert storages1cPathList.size() == templatebasesList.size()
                         }
@@ -95,7 +95,7 @@ pipeline {
                             )
 
 
-                                                         if (j==0) {var_steps=30} else if (j==1) {var_steps=14} else if (j==2) {var_steps=7}
+
                             // 3. Загружаем sql бекап эталонной базы в тестовую
                             restoreTasks["restoreTask_${testbase}"] = restoreTask(
                                 serverSql, 
@@ -103,7 +103,7 @@ pipeline {
                                 templateDb,
                                 sqlUser,
                                 sqlPwd,
-                                var_steps  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
+                             backupdayslist[j] // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
                             )
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
@@ -124,7 +124,7 @@ pipeline {
                                 admin1cPwd
                             )
                             // 6. Запускаем внешнюю обработку 1С, которая очищает базу от всплывающего окна с тем, что база перемещена при старте 1С
-                         
+
                         }
                       }
 
