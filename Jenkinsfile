@@ -103,7 +103,7 @@ pipeline {
                                 sqlUser,
                                 sqlPwd,
                                 var_steps  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
-                            )
+                            )}
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
                                 "${server1c}:${agent1cPort}",
@@ -130,7 +130,7 @@ pipeline {
                                 testbaseConnString
                             )
 
-                      }}
+                      }
 
                         parallel dropDbTasks
                         parallel backupTasks
