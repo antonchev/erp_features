@@ -76,7 +76,7 @@ pipeline {
                         for (i = 0;  i < templatebasesList.size(); i++) {
                              for (j = 0;  j < var_steps.size(); j++) {
                             templateDb = templatebasesList[i]
-                            storage1cPath = storages1cPathList[i]
+                            storage1cPath = storages1cPathList[j]
                             testbase = "test_${templateDb}"
                             testbaseConnString = projectHelpers.getConnString(server1c, testbase, agent1cPort)
                             backupPath = "${env.WORKSPACE}/build/temp_${templateDb}_${utils.currentDateStamp()}"
