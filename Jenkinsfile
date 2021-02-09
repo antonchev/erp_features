@@ -75,8 +75,7 @@ pipeline {
                     script {
 
                         for (i = 0;  i < templatebasesList.size(); i++) {
-                            for (j = 0;  j < 3; i++) {
-                               if (j==0) {var_steps = '7'} else if (j==1) {var_steps = '14'} else if (j==2) {var_steps = '30'}
+
                             templateDb = templatebasesList[i]
                             storage1cPath = storages1cPathList[i]
                             testbase = "test_${templateDb}"
@@ -93,7 +92,7 @@ pipeline {
                                 admin1cPwd,
                                 sqluser,
                                 sqlPwd
-                            )     
+                            )
                             // 3. Загружаем sql бекап эталонной базы в тестовую
                             restoreTasks["restoreTask_${testbase}"] = restoreTask(
                                 serverSql, 
@@ -101,7 +100,7 @@ pipeline {
                                 templateDb,
                                 sqlUser,
                                 sqlPwd,
-                                var_steps  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
+                                8  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
                             )
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
@@ -129,7 +128,7 @@ pipeline {
                                 testbaseConnString
                             )
 
-                      } }
+                      }
 
                         parallel dropDbTasks
                         parallel backupTasks
