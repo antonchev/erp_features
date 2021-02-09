@@ -80,7 +80,7 @@ pipeline {
                             testbase = "test_${templateDb}"
                             testbaseConnString = projectHelpers.getConnString(server1c, testbase, agent1cPort)
                             backupPath = "${env.WORKSPACE}/build/temp_${templateDb}_${utils.currentDateStamp()}"
-                            days = var_steps[j]
+                            day = var_steps[j]
                             // 1. Удаляем тестовую базу из кластера (если он там была) и очищаем клиентский кеш 1с
                             dropDbTasks["dropDbTask_${testbase}"] = dropDbTask(
                                 server1c, 
@@ -100,7 +100,7 @@ pipeline {
                                 templateDb,
                                 sqlUser,
                                 sqlPwd,
-                                days  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
+                                day  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
                             )
                             }
                             // 4. Создаем тестовую базу кластере 1С
@@ -198,7 +198,7 @@ def backupTask(serverSql, infobase, backupPath, sqlUser, sqlPwd) {
 
 def restoreTask(serverSql, infobase, backupPath, sqlUser, sqlPwd,day) {
     return {
-        stage("Востановление ${infobase} бекапа ${days}") {
+        stage("Востановление ${infobase} бекапа ${day}") {
             timestamps {
                 sqlUtils = new SqlUtils()
                 utils = new Utils()
