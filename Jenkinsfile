@@ -125,7 +125,12 @@ pipeline {
 
 }
 
-                      
+                        dropDbTasks
+                        backupTasks
+                        restoreTasks
+                        createDbTasks
+                        updateDbTasks
+                        runHandlers1cTasks
                     }
                 }
             }
