@@ -82,7 +82,7 @@ pipeline {
                             backupPath = "${env.WORKSPACE}/build/temp_${templateDb}_${utils.currentDateStamp()}"
                             days = var_steps[j]
                             // 1. Удаляем тестовую базу из кластера (если он там была) и очищаем клиентский кеш 1с
-                            dropDbTasks["dropDbTask_${testbase}"] = dropDbTask(
+                            dropDbTasks["dropDbTask_${testbase}_${days}"] = dropDbTask(
                                 server1c, 
                                 server1cPort, 
                                 serverSql, 
