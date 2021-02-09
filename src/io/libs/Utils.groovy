@@ -76,7 +76,7 @@ def currentDateStampminusday() {
 
 
 
-    date = LocalDateTime.now().minusDays(10);
+    date = LocalDateTime.now().minusDays(12);
     formattedDateTime = date.format(formatter);
     return  formattedDateTime;
 }
