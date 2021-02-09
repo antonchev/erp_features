@@ -92,7 +92,7 @@ pipeline {
                                 sqluser,
                                 sqlPwd
                             )
-
+}}
                             // 3. Загружаем sql бекап эталонной базы в тестовую
                             restoreTasks["restoreTask_${testbase}"] = restoreTask(
                                 serverSql, 
@@ -122,8 +122,7 @@ pipeline {
                             )
                             // 6. Запускаем внешнюю обработку 1С, которая очищает базу от всплывающего окна с тем, что база перемещена при старте 1С
 
-                        }
-                      }
+
 
                         parallel dropDbTasks
                         parallel backupTasks
