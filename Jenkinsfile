@@ -82,7 +82,7 @@ pipeline {
                             backupPath = "${env.WORKSPACE}/build/temp_${templateDb}_${utils.currentDateStamp()}"
                             days = var_steps[j]
                             // 1. Удаляем тестовую базу из кластера (если он там была) и очищаем клиентский кеш 1с
-                            dropDbTasks["dropDbTask_${testbase}_${days}"] = dropDbTask(
+                            dropDbTasks["dropDbTask_${testbase}"] = dropDbTask(
                                 server1c, 
                                 server1cPort, 
                                 serverSql, 
@@ -94,7 +94,7 @@ pipeline {
                             )
 
                             // 3. Загружаем sql бекап эталонной базы в тестовую
-                            restoreTasks["restoreTask_${testbase}_${days}"] = restoreTask(
+                            restoreTasks["restoreTask_${testbase}"] = restoreTask(
                                 serverSql, 
                                 testbase, 
                                 templateDb,
