@@ -78,6 +78,7 @@ pipeline {
                              for (j = 0;  j < 3; j++) {
                             templateDb = templatebasesList[i]
                             storage1cPath = storages1cPathList[i]
+                            days =  backupdayslist[j]
                             testbase = "test_${templateDb}"
                             testbaseConnString = projectHelpers.getConnString(server1c, testbase, agent1cPort)
                             backupPath = "${env.WORKSPACE}/build/temp_${templateDb}_${utils.currentDateStamp()}"
@@ -103,7 +104,7 @@ pipeline {
                                 templateDb,
                                 sqlUser,
                                 sqlPwd,
-                             backupdayslist[j] // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
+                             days// количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
                             )
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
