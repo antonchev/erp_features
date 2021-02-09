@@ -92,9 +92,9 @@ pipeline {
                                 sqluser,
                                 sqlPwd
                             )
-}}
+
                             // 3. Загружаем sql бекап эталонной базы в тестовую
-                            restoreTasks["restoreTask_${testbase}"] = restoreTask(
+                            restoreTasks["restoreTask_${testbase}_${days}"] = restoreTask(
                                 serverSql, 
                                 testbase, 
                                 templateDb,
@@ -102,6 +102,7 @@ pipeline {
                                 sqlPwd,
                                 days  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
                             )
+                            }
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
                                 "${server1c}:${agent1cPort}",
@@ -122,7 +123,7 @@ pipeline {
                             )
                             // 6. Запускаем внешнюю обработку 1С, которая очищает базу от всплывающего окна с тем, что база перемещена при старте 1С
 
-
+}
 
                         parallel dropDbTasks
                         parallel backupTasks
