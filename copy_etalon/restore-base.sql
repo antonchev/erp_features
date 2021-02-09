@@ -8,8 +8,21 @@ DECLARE @DBName_From as nvarchar(40)
 set @DBName_From = '$(dbname_from)'
 DECLARE @DBName_To as nvarchar(40)
 set @DBName_To = '$(dbname_to)'
-DECLARE @DBdate as nvarchar(40)
+DECLARE @DBdate datetime2
 set @DBdate = '$(dbdate)'
+
+
+
+DECLARE @DBdate_to datetime2
+DECLARE @DBdate_from datetime2
+
+
+SET @DBdate_from = DATEADD(SECOND,86399,@DBdate)
+set @DBdate_from = CONVERT(VARCHAR, @DBdate_from, 0)
+SET @DBdate_to = DATEADD(SECOND,1,@DBdate)
+set @DBdate_to = CONVERT(VARCHAR, @DBdate_to, 0)
+
+
 
 SELECT
 	backupset.backup_start_date,
@@ -22,8 +35,8 @@ FROM msdb.dbo.backupset AS backupset
     INNER JOIN msdb.dbo.backupmediafamily AS backupmediafamily 
 	ON backupset.media_set_id = backupmediafamily.media_set_id
 WHERE backupset.database_name = @DBName_From
-	and backupset.backup_start_date < @DBdate + ' ' + '23:59:00'
-	and backupset.backup_start_date > @DBdate + ' ' + '00:00:00'
+	and backupset.backup_start_date < @DBdate_from
+	and backupset.backup_start_date > @DBdate_to
 	and backupset.is_copy_only = 0 -- флаг "Только резервное копирование"
 	and backupset.is_snapshot = 0 -- флаг "Не snapshot"
 	and (backupset.description is null or backupset.description not like 'Image-level backup') -- Защита от Veeam Backup & Replication
