@@ -94,14 +94,15 @@ pipeline {
                             )
 
                             // 3. Загружаем sql бекап эталонной базы в тестовую
-                            restoreTasks["restoreTask_${testbase}"] = restoreTask(
-                                serverSql, 
-                                testbase, 
-                                templateDb,
-                                sqlUser,
-                                sqlPwd,
-                                day  // количество минус дней, напрмер 7, копия неделю назад, 30 = месяц назад и т.д.
-                            )
+                          stage("Востановление ${infobase} бекапа ${day}") {
+                                      timestamps {
+                                          sqlUtils = new SqlUtils()
+                                          utils = new Utils()
+                                          date = utils.currentDateStampminusday(day)
+                                          sqlUtils.createEmptyDb(serverSql, testbase, sqlUser, sqlPwd)
+                                          sqlUtils.restoreDb(serverSql, testbase, backupPath, sqlUser, sqlPwd,date)
+                                      }
+                                  }
                             }
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
