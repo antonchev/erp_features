@@ -115,7 +115,7 @@ def restoreDb(dbServer, dbname_to, dbname_from, sqlUser, sqlPwd,date) {
 
     returnCode = utils.cmd("sqlcmd -S ${dbServer} -i \"${env.WORKSPACE}/copy_etalon/restore-base.sql\" -b -v dbdate=$date -v dbname_to =${dbname_to} -v dbname_from=\"${dbname_from}\"")
     if (returnCode != 0) {
-         utils.raiseError("Возникла ошибка при восстановлении базы из sql бекапа ${dbServer}\\${infobase}. Для подробностей смотрите логи")
+         utils.raiseError("Возникла ошибка при восстановлении базы из sql бекапа ${dbServer}\\${dbname_from}. Для подробностей смотрите логи")
     } 
 }
 
