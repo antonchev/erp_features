@@ -103,23 +103,18 @@ pipeline {
                                   }
 
                             // 4. Создаем тестовую базу кластере 1С
-                            createDbTasks["createDbTask_${testbase}"] = createDbTask(
-                                "${server1c}:${agent1cPort}",
-                                serverSql,
-                                platform1c,
-                                testbase
-                            )
+                           stage("Создание базы ${testbase}") {
+                                       timestamps {
+                                           def projectHelpers = new ProjectHelpers()
+                                           try {
+                                               projectHelpers.createDb(platform1c, server1c, serversql, testbase, null, false)
+                                           } catch (excp) {
+                                               echo "Error happened when creating base ${testbase}. Probably base already exists in the ibases.v8i list. Skip the error"
+                                           }
+                                       }
+                                   }
                             // 5. Обновляем тестовую базу из хранилища 1С (если применимо)
-                            updateDbTasks["updateTask_${testbase}"] = updateDbTask(
-                                platform1c,
-                                testbase, 
-                                storage1cPath, 
-                                storageUser, 
-                                storagePwd, 
-                                testbaseConnString, 
-                                admin1cUser, 
-                                admin1cPwd
-                            )
+
                          }   // 6. Запускаем внешнюю обработку 1С, которая очищает базу от всплывающего окна с тем, что база перемещена при старте 1С
 
 }
