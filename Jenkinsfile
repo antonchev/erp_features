@@ -103,7 +103,7 @@ pipeline {
                                           sqlUtils.restoreDb(serverSql, testbase, backupPath, sqlUser, sqlPwd,date)
                                       }
                                   }
-                            }
+
                             // 4. Создаем тестовую базу кластере 1С
                             createDbTasks["createDbTask_${testbase}"] = createDbTask(
                                 "${server1c}:${agent1cPort}",
@@ -122,15 +122,13 @@ pipeline {
                                 admin1cUser, 
                                 admin1cPwd
                             )
-                            // 6. Запускаем внешнюю обработку 1С, которая очищает базу от всплывающего окна с тем, что база перемещена при старте 1С
+                         }   // 6. Запускаем внешнюю обработку 1С, которая очищает базу от всплывающего окна с тем, что база перемещена при старте 1С
 
 }
 
-                        dropDbTasks
-                        backupTasks
-                        restoreTasks
-                        createDbTasks
-                        updateDbTasks
+                       parallel dropDbTasks
+                       parallel createDbTasks
+                       parallel updateDbTasks
 
                     }
                 }
