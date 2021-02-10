@@ -105,7 +105,7 @@ pipeline {
                             // 4. Создаем тестовую базу кластере 1С
                            stage("Создание базы ${testbase}") {
                                        timestamps {
-                                           def projectHelpers = new ProjectHelpers()
+                                            projectHelpers = new ProjectHelpers()
                                            try {
                                                projectHelpers.createDb(platform1c, server1c, serversql, testbase, null, false)
                                            } catch (excp) {
