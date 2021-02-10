@@ -124,9 +124,8 @@ pipeline {
 
 }
 
-                       parallel dropDbTasks
-                       parallel createDbTasks
-                       parallel updateDbTasks
+
+                    
 
                     }
                 }
