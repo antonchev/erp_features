@@ -125,11 +125,11 @@ pipeline {
 
 }
 
-                        parallel dropDbTasks
-                        parallel backupTasks
-                        parallel restoreTasks
-                        parallel createDbTasks
-                        parallel updateDbTasks
+                        dropDbTasks
+                        backupTasks
+                        restoreTasks
+                        createDbTasks
+                        updateDbTasks
 
                     }
                 }
