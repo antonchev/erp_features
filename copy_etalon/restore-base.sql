@@ -71,6 +71,10 @@ IF @@FETCH_STATUS<>0
 	BEGIN
 		SET @subject = 'ОШИБКА ВОССТАНОВЛЕНИЯ базы данных ' + @DBName_To
 		SET @finalmassage = 'Не найдена полная резервная копия для базы данных ' + @DBName_From
+		RAISERROR ('FATAL', -- Message text.
+               16, -- Severity.
+               1 -- State.
+               );
 	END
 ELSE
 	
