@@ -94,7 +94,7 @@ pipeline {
                             )
 
                             // 3. Загружаем sql бекап эталонной базы в тестовую
-                          stage("Востановление ${infobase} бекапа ${day}") {
+                          stage("Востановление ${testbase} бекапа ${day}") {
                                       timestamps {
                                           sqlUtils = new SqlUtils()
                                           utils = new Utils()
