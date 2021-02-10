@@ -83,7 +83,7 @@ pipeline {
                             day = var_steps[j]
                             // 1. Удаляем тестовую базу из кластера (если он там была) и очищаем клиентский кеш 1с
                             timestamps {
-                                       stage("Удаление ${infobase}") {
+                                       stage("Удаление ${testbase}") {
                                            projectHelpers = new ProjectHelpers()
                                            utils = new Utils()
 
