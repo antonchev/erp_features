@@ -82,16 +82,15 @@ pipeline {
                             backupPath = "${env.WORKSPACE}/build/temp_${templateDb}_${utils.currentDateStamp()}"
                             day = var_steps[j]
                             // 1. Удаляем тестовую базу из кластера (если он там была) и очищаем клиентский кеш 1с
-                            dropDbTasks["dropDbTask_${testbase}"] = dropDbTask(
-                                server1c, 
-                                server1cPort, 
-                                serverSql, 
-                                testbase, 
-                                admin1cUser, 
-                                admin1cPwd,
-                                sqluser,
-                                sqlPwd
-                            )
+                           timestamps {
+                                       stage("Удаление ${testbase}") {
+                                           def projectHelpers = new ProjectHelpers()
+                                           def utils = new Utils()
+
+                                           projectHelpers.dropDb(server1c, server1cPort, serverSql, testbase, admin1cUser, admin1cPwd, sqluser, sqlPwd)
+                                       }
+                                   }
+                               }
 
                             // 3. Загружаем sql бекап эталонной базы в тестовую
                           stage("Востановление ${testbase} бекапа ${day}") {
