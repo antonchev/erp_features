@@ -84,8 +84,8 @@ pipeline {
                             // 1. Удаляем тестовую базу из кластера (если он там была) и очищаем клиентский кеш 1с
                             timestamps {
                                        stage("Удаление ${infobase}") {
-                                           def projectHelpers = new ProjectHelpers()
-                                           def utils = new Utils()
+                                           projectHelpers = new ProjectHelpers()
+                                           utils = new Utils()
 
                                            projectHelpers.dropDb(server1c, server1cPort, serverSql, testbase, admin1cUser, admin1cPwd, sqluser, sqlPwd)
                                        }
@@ -125,7 +125,7 @@ pipeline {
 }
 
 
-                    
+
 
                     }
                 }
