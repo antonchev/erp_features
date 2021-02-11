@@ -10,6 +10,21 @@ package io.libs
 //  cfdt - файловый путь к dt или cf конфигурации для загрузки. Только для пакетного режима!
 //  isras - если true, то используется RAS для скрипта, в противном случае - пакетный режим
 //
+
+def checkDb(platform, server1c, base) {
+    utils = new Utils()
+
+    platformLine = ""
+    if (platformLine != null && !platformLine.isEmpty()) {
+        platformLine = "-platform ${platform}"
+    }
+
+    returnCode = utils.cmd("oscript one_script_tools/checkconnectib.os ${platformLine} -server ${server1c} -base ${base} -user ${} -passw ${}")
+    if (returnCode != 0) {
+        utils.raiseError("Возникла ошибка при проверке ${base} в кластере ${server1c}")
+    }
+}
+
 def createDb(platform, server1c, serversql, base, cfdt, isras) {
     utils = new Utils()
 
@@ -41,6 +56,8 @@ def createDb(platform, server1c, serversql, base, cfdt, isras) {
 //  admin1cUsr - имя админа 1С базы
 //  admin1cPwd - пароль админа 1С базы
 //
+
+
 def unlocking1cBase(connString, admin1cUsr, admin1cPwd) {
     utils = new Utils()
 
@@ -103,7 +120,7 @@ def dropDb(server1c, agentPort, serverSql, base, admin1cUser, admin1cPwd, sqluse
         sqlpasswLine = "-sqlPwd ${sqlPwd}"
     }
 
-    returnCode = utils.cmd("powershell -file \"${env.WORKSPACE}/copy_etalon/drop_db.ps1\" -server1c ${server1c} -agentPort ${agentPort} -serverSql ${serverSql} -infobase ${base} ${admin1cUserLine} ${admin1cPwdLine} ${sqluserLine} ${sqlpasswLine} ${fulldropLine}")
+    returnCode = utils.cmd("powershell -file \"${env.WORKSPACE}/copy_etalon/drop_db.ps1\" -server1c ${server1c} -agentPort ${agentPort} -serverSql ${serverSql} -infobase ${base} ${admin1cUserLine} ${admin1cPwdLine} ${fulldropLine}")
     if (returnCode != 0) { 
         error "error when deleting base with COM ${server1c}\\${base}. See logs above fore more information."
     }

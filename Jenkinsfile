@@ -1,4 +1,4 @@
-@Library("shared-libraries")
+@Library("check_backup")
 import io.libs.SqlUtils
 import io.libs.ProjectHelpers
 import io.libs.Utils
@@ -12,10 +12,11 @@ def dropDbTasks = [:]
 def createDbTasks = [:]
 def runHandlers1cTasks = [:]
 def updateDbTasks = [:]
-
+def var_steps = [14]
 pipeline {
 
     parameters {
+
         string(defaultValue: "${env.jenkinsAgent}", description: 'Нода дженкинса, на которой запускать пайплайн. По умолчанию master', name: 'jenkinsAgent')
         string(defaultValue: "${env.server1c}", description: 'Имя сервера 1с, по умолчанию localhost', name: 'server1c')
         string(defaultValue: "${env.server1cPort}", description: 'Порт рабочего сервера 1с. По умолчанию 1540. Не путать с портом агента кластера (1541)', name: 'server1cPort')
@@ -32,6 +33,7 @@ pipeline {
         string(defaultValue: "${env.storagePwd}", description: 'Необязательный. Пароль администратора хранилищ 1c', name: 'storagePwd')
     }
 
+
     agent {
         label "${(env.jenkinsAgent == null || env.jenkinsAgent == 'null') ? "master" : env.jenkinsAgent}"
     }
@@ -44,6 +46,8 @@ pipeline {
             steps {
                 timestamps {
                     script {
+
+                    notifyStarted();
                         templatebasesList = utils.lineToArray(templatebases.toLowerCase())
                         storages1cPathList = utils.lineToArray(storages1cPath.toLowerCase())
 
@@ -72,109 +76,94 @@ pipeline {
                     script {
 
                         for (i = 0;  i < templatebasesList.size(); i++) {
+                             for (j = 0;  j < var_steps.size(); j++) {
                             templateDb = templatebasesList[i]
-                            storage1cPath = storages1cPathList[i]
+                            storage1cPath = storages1cPathList[j]
                             testbase = "test_${templateDb}"
                             testbaseConnString = projectHelpers.getConnString(server1c, testbase, agent1cPort)
                             backupPath = "${env.WORKSPACE}/build/temp_${templateDb}_${utils.currentDateStamp()}"
-
+                            day = var_steps[j]
                             // 1. Удаляем тестовую базу из кластера (если он там была) и очищаем клиентский кеш 1с
-                            dropDbTasks["dropDbTask_${testbase}"] = dropDbTask(
-                                server1c, 
-                                server1cPort, 
-                                serverSql, 
-                                testbase, 
-                                admin1cUser, 
-                                admin1cPwd,
-                                sqluser,
-                                sqlPwd
-                            )
-                            // 2. Делаем sql бекап эталонной базы, которую будем загружать в тестовую базу
-                            backupTasks["backupTask_${templateDb}"] = backupTask(
-                                serverSql, 
-                                templateDb, 
-                                backupPath,
-                                sqlUser,
-                                sqlPwd
-                            )
+                            timestamps {
+                                       stage("Удаление ${testbase}") {
+                                           projectHelpers = new ProjectHelpers()
+                                           utils = new Utils()
+
+                                           projectHelpers.dropDb(server1c, server1cPort, serverSql, testbase, admin1cUser, admin1cPwd, sqluser, sqlPwd)
+                                       }
+                                   }
+
                             // 3. Загружаем sql бекап эталонной базы в тестовую
-                            restoreTasks["restoreTask_${testbase}"] = restoreTask(
-                                serverSql, 
-                                testbase, 
-                                backupPath,
-                                sqlUser,
-                                sqlPwd
-                            )
+                          stage("Востановление ${testbase} бекапа ${day}") {
+                                      timestamps {
+                                          sqlUtils = new SqlUtils()
+                                          utils = new Utils()
+                                          date = utils.currentDateStampminusday(day)
+                                          sqlUtils.createEmptyDb(serverSql, testbase, sqlUser, sqlPwd)
+                                          sqlUtils.restoreDb(serverSql, testbase, templateDb, sqlUser, sqlPwd,date)
+                                      }
+                                  }
+
                             // 4. Создаем тестовую базу кластере 1С
-                            createDbTasks["createDbTask_${testbase}"] = createDbTask(
-                                "${server1c}:${agent1cPort}",
-                                serverSql,
-                                platform1c,
-                                testbase
-                            )
+                           stage("Создание базы ${testbase}") {
+                                       timestamps {
+                                            projectHelpers = new ProjectHelpers()
+                                           try {
+                                               projectHelpers.createDb(platform1c, server1c, serversql, testbase, null, false)
+                                           } catch (excp) {
+                                               echo "Error happened when creating base ${testbase}. Probably base already exists in the ibases.v8i list. Skip the error"
+                                           }
+                                       }
+                                   }
                             // 5. Обновляем тестовую базу из хранилища 1С (если применимо)
-                            updateDbTasks["updateTask_${testbase}"] = updateDbTask(
-                                platform1c,
-                                testbase, 
-                                storage1cPath, 
-                                storageUser, 
-                                storagePwd, 
-                                testbaseConnString, 
-                                admin1cUser, 
-                                admin1cPwd
-                            )
-                            // 6. Запускаем внешнюю обработку 1С, которая очищает базу от всплывающего окна с тем, что база перемещена при старте 1С
-                            runHandlers1cTasks["runHandlers1cTask_${testbase}"] = runHandlers1cTask(
-                                testbase, 
-                                admin1cUser, 
-                                admin1cPwd,
-                                testbaseConnString
-                            )
-                        }
 
-                        parallel dropDbTasks
-                        parallel backupTasks
-                        parallel restoreTasks
-                        parallel createDbTasks
-                        parallel updateDbTasks
-                        parallel runHandlers1cTasks
+                        stage("Тестирование базы ${testbase}") {
+                                  timestamps {
+                                    if (templatebasesList.size() == 0) {
+                                                                      return
+                                                                  }
+
+                                                                  platform1cLine = ""
+                                                                  if (platform1c != null && !platform1c.isEmpty()) {
+                                                                      platform1cLine = "--v8version ${platform1c}"
+                                                                  }
+
+                                                                  admin1cUsrLine = ""
+                                                                  if (admin1cUser != null && !admin1cUser.isEmpty()) {
+                                                                      admin1cUsrLine = "-user ${admin1cUser}"
+                                                                  }
+
+                                                                  admin1cPwdLine = ""
+                                                                  if (admin1cPwd != null && !admin1cPwd.isEmpty()) {
+                                                                      admin1cPwdLine = "-passw ${admin1cPwd}"
+                                                                  }
+
+
+                                                                   returnCode = utils.cmd("oscript one_script_tools/checkconnectib.os -server ${server1c} -base ${testbase} ${admin1cUsrLine} ${admin1cPwdLine}")
+                                                                      if (returnCode != 0) {
+                                                                      currentBuild.result = 'FAILURE'
+                                                                      notifyFailed();
+                                                                      return error
+                                                                      } else notifySuccessful();
+
+                                  }
+
+                                  }
+
+
+                         }   // 6. Запускаем внешнюю обработку 1С, которая очищает базу от всплывающего окна с тем, что база перемещена при старте 1С
+
+
+}
+
+
+
+
                     }
                 }
             }
         }
-        stage("Тестирование ADD") {
-            steps {
-                timestamps {
-                    script {
 
-                        if (templatebasesList.size() == 0) {
-                            return
-                        }
-
-                        platform1cLine = ""
-                        if (platform1c != null && !platform1c.isEmpty()) {
-                            platform1cLine = "--v8version ${platform1c}"
-                        }
-
-                        admin1cUsrLine = ""
-                        if (admin1cUser != null && !admin1cUser.isEmpty()) {
-                            admin1cUsrLine = "--db-user ${admin1cUser}"
-                        }
-
-                        admin1cPwdLine = ""
-                        if (admin1cPwd != null && !admin1cPwd.isEmpty()) {
-                            admin1cPwdLine = "--db-pwd ${admin1cPwd}"
-                        }
-                        // Запускаем ADD тестирование на произвольной базе, сохранившейся в переменной testbaseConnString
-                        returnCode = utils.cmd("runner vanessa --settings tools/vrunner.json ${platform1cLine} --ibconnection \"${testbaseConnString}\" ${admin1cUsrLine} ${admin1cPwdLine} --pathvanessa tools/add/bddRunner.epf")
-
-                        if (returnCode != 0) {
-                            utils.raiseError("Возникла ошибка при запуске ADD на сервере ${server1c} и базе ${testbase}")
-                        }
-                    }
-                }
-            }
-        }
     }   
     post {
         always {
@@ -182,6 +171,7 @@ pipeline {
                 if (currentBuild.result == "ABORTED") {
                     return
                 }
+
 
                 dir ('build/out/allure') {
                     writeFile file:'environment.properties', text:"Build=${env.BUILD_URL}"
@@ -191,6 +181,39 @@ pipeline {
             }
         }
     }
+}
+
+
+def notifyStarted() {
+  // send to Slack
+
+  // send to email
+  emailext (
+      subject: "Запущена: задача ${env.JOB_NAME} ${templatebases}",
+      body: "Запущена: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}] баз ${templatebases}: Ход работы можно посмотреть: ${env.BUILD_URL}",
+      to: '$DEFAULT_RECIPIENTS',
+    )
+}
+
+
+def notifyFailed() {
+
+
+  emailext (
+      subject: "ОШИБКА: задача ${env.JOB_NAME} ${templatebases}",
+      body: "Ошибка: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}] баз ${templatebases}: Ход работы можно посмотреть: ${env.BUILD_URL}",
+       to: '$DEFAULT_RECIPIENTS',
+    )
+}
+
+def notifySuccessful() {
+
+
+  emailext (
+      subject: "Выполнено: задача ${env.JOB_NAME} ${templatebases}",
+      body: "Выполнено: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}] баз ${templatebases}: Ход работы можно посмотреть: ${env.BUILD_URL}",
+       to: '$DEFAULT_RECIPIENTS',
+    )
 }
 
 
@@ -235,14 +258,15 @@ def backupTask(serverSql, infobase, backupPath, sqlUser, sqlPwd) {
     }
 }
 
-def restoreTask(serverSql, infobase, backupPath, sqlUser, sqlPwd) {
+def restoreTask(serverSql, infobase, backupPath, sqlUser, sqlPwd,day) {
     return {
-        stage("Востановление ${infobase} бекапа") {
+        stage("Востановление ${infobase} бекапа ${day}") {
             timestamps {
                 sqlUtils = new SqlUtils()
-
+                utils = new Utils()
+                date = utils.currentDateStampminusday(day)
                 sqlUtils.createEmptyDb(serverSql, infobase, sqlUser, sqlPwd)
-                sqlUtils.restoreDb(serverSql, infobase, backupPath, sqlUser, sqlPwd)
+                sqlUtils.restoreDb(serverSql, infobase, backupPath, sqlUser, sqlPwd,date)
             }
         }
     }

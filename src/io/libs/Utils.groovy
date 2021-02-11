@@ -1,8 +1,10 @@
 package io.libs
 
 import java.util.Date;
+import java.time.LocalDateTime;
 import java.text.SimpleDateFormat;
 import groovy.json.JsonSlurper
+import java.time.format.DateTimeFormatter
 
 // Выполняет команду в среде ОС Windows (batch) или Linux (bash) и возвращает статус операции
 //
@@ -67,6 +69,18 @@ def currentDateStamp() {
     date = new Date();
     return  dateFormat.format(date);
 }
+def currentDateStampminusday(day) {
+    dateFormat = new SimpleDateFormat("yyyyMMdddss");
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+
+
+    date = LocalDateTime.now().minusDays(day);
+    formattedDateTime = date.format(formatter);
+    return  formattedDateTime;
+}
+
 
 // Возвращает отформатированную текущую дату
 //
