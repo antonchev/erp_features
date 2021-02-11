@@ -194,8 +194,7 @@ def notifyFailed() {
         <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
       recipientProviders: [[$class: 'DevelopersRecipientProvider']]
     )
-
-
+}
 
 def notifySuccessful() {
   slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
@@ -210,7 +209,7 @@ def notifySuccessful() {
         <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
       recipientProviders: [[$class: 'DevelopersRecipientProvider']]
     )
-
+}
 
 
 def dropDbTask(server1c, server1cPort, serverSql, infobase, admin1cUser, admin1cPwd, sqluser, sqlPwd) {
