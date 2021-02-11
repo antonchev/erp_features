@@ -141,6 +141,8 @@ pipeline {
 
                                                                    returnCode = utils.cmd("oscript one_script_tools/checkconnectib.os -server ${server1c} -base ${testbase} ${admin1cUsrLine} ${admin1cPwdLine}")
                                                                       if (returnCode != 0) {
+                                                                      currentBuild.result = 'FAILURE'
+
                                                                       notifyFailed();
 
                                                                       }
