@@ -46,6 +46,8 @@ pipeline {
             steps {
                 timestamps {
                     script {
+
+                    notifyStarted();
                         templatebasesList = utils.lineToArray(templatebases.toLowerCase())
                         storages1cPathList = utils.lineToArray(storages1cPath.toLowerCase())
 
@@ -140,7 +142,7 @@ pipeline {
                                                                    returnCode = utils.cmd("oscript one_script_tools/checkconnectib.os -server ${server1c} -base ${testbase} ${admin1cUsrLine} ${admin1cPwdLine}")
                                                                       if (returnCode != 0) {
                                                                       notifyFailed();
-                                                                          utils.raiseError("Возникла ошибка при проверке ${base} в кластере ${server1c}")
+
                                                                       }
 
                                   }
@@ -168,7 +170,7 @@ pipeline {
                 if (currentBuild.result == "ABORTED") {
                     return
                 }
-                notifySuccessful();
+
 
                 dir ('build/out/allure') {
                     writeFile file:'environment.properties', text:"Build=${env.BUILD_URL}"
@@ -178,6 +180,19 @@ pipeline {
             }
         }
     }
+}
+
+
+def notifyStarted() {
+  // send to Slack
+
+  // send to email
+  emailext (
+      subject: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+      body: """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+        <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
+      recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+    )
 }
 
 
