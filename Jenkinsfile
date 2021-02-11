@@ -100,7 +100,11 @@ pipeline {
                                           utils = new Utils()
                                           date = utils.currentDateStampminusday(day)
                                           sqlUtils.createEmptyDb(serverSql, testbase, sqlUser, sqlPwd)
+                                           try {
                                           sqlUtils.restoreDb(serverSql, testbase, templateDb, sqlUser, sqlPwd,date)
+                                            } catch (excp) {
+                                           notifyFailed();
+                                              }
                                       }
                                   }
 
