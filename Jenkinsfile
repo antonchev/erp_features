@@ -115,7 +115,7 @@ pipeline {
                                    }
                             // 5. Обновляем тестовую базу из хранилища 1С (если применимо)
 
-                        stage("Тестирование ADD") {
+                        stage("Тестирование базы ${testbase}") {
                                   timestamps {
                                     if (templatebasesList.size() == 0) {
                                                                       return
@@ -128,19 +128,19 @@ pipeline {
 
                                                                   admin1cUsrLine = ""
                                                                   if (admin1cUser != null && !admin1cUser.isEmpty()) {
-                                                                      admin1cUsrLine = "--db-user ${admin1cUser}"
+                                                                      admin1cUsrLine = "-user ${admin1cUser}"
                                                                   }
 
                                                                   admin1cPwdLine = ""
                                                                   if (admin1cPwd != null && !admin1cPwd.isEmpty()) {
-                                                                      admin1cPwdLine = "--db-pwd ${admin1cPwd}"
+                                                                      admin1cPwdLine = "-passw ${admin1cPwd}"
                                                                   }
-                                                                  // Запускаем ADD тестирование на произвольной базе, сохранившейся в переменной testbaseConnString
-                                                                  returnCode = utils.cmd("runner vanessa --settings tools/vrunner.json ${platform1cLine} --ibconnection \"${testbaseConnString}\" ${admin1cUsrLine} ${admin1cPwdLine} --pathvanessa tools/add/bddRunner.epf")
 
-                                                                  if (returnCode != 0) {
-                                                                      utils.raiseError("Возникла ошибка при запуске ADD на сервере ${server1c} и базе ${testbase}")
-                                                                  }
+
+                                                                   returnCode = utils.cmd("oscript one_script_tools/checkconnectib.os ${platformLine} -server ${server1c} -base ${testbase} ${admin1cUsrLine} ${admin1cPwdLine}")
+                                                                      if (returnCode != 0) {
+                                                                          utils.raiseError("Возникла ошибка при проверке ${base} в кластере ${server1c}")
+                                                                      }
 
                                   }
 

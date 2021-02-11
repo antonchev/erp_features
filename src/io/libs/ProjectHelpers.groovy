@@ -10,6 +10,21 @@ package io.libs
 //  cfdt - файловый путь к dt или cf конфигурации для загрузки. Только для пакетного режима!
 //  isras - если true, то используется RAS для скрипта, в противном случае - пакетный режим
 //
+
+def checkDb(platform, server1c, base) {
+    utils = new Utils()
+
+    platformLine = ""
+    if (platformLine != null && !platformLine.isEmpty()) {
+        platformLine = "-platform ${platform}"
+    }
+
+    returnCode = utils.cmd("oscript one_script_tools/checkconnectib.os ${platformLine} -server ${server1c} -base ${base} -user ${} -passw ${}")
+    if (returnCode != 0) {
+        utils.raiseError("Возникла ошибка при проверке ${base} в кластере ${server1c}")
+    }
+}
+
 def createDb(platform, server1c, serversql, base, cfdt, isras) {
     utils = new Utils()
 
@@ -41,6 +56,8 @@ def createDb(platform, server1c, serversql, base, cfdt, isras) {
 //  admin1cUsr - имя админа 1С базы
 //  admin1cPwd - пароль админа 1С базы
 //
+
+
 def unlocking1cBase(connString, admin1cUsr, admin1cPwd) {
     utils = new Utils()
 
