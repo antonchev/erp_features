@@ -12,7 +12,7 @@ def dropDbTasks = [:]
 def createDbTasks = [:]
 def runHandlers1cTasks = [:]
 def updateDbTasks = [:]
-def var_steps = [7,14,30]
+def var_steps = [14]
 pipeline {
 
     parameters {
