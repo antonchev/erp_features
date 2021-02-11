@@ -191,7 +191,7 @@ def notifyStarted() {
   emailext (
       subject: "Запущена: задача ${env.JOB_NAME} ${templatebases}",
       body: "Запущена: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}] баз ${templatebases}: Ход работы можно посмотреть: ${env.BUILD_URL}",
-      to: '$DEFAULT_RECIPIENTS',
+      to: 'aantonchev@ivi.ru',
     )
 }
 
@@ -202,7 +202,7 @@ def notifyFailed() {
   emailext (
       subject: "ОШИБКА: задача ${env.JOB_NAME} ${templatebases}",
       body: "Ошибка: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}] баз ${templatebases}: Ход работы можно посмотреть: ${env.BUILD_URL}",
-       to: '$DEFAULT_RECIPIENTS',
+       to: 'aantonchev@ivi.ru',
     )
 }
 
@@ -212,7 +212,7 @@ def notifySuccessful() {
   emailext (
       subject: "Выполнено: задача ${env.JOB_NAME} ${templatebases}",
       body: "Выполнено: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}] баз ${templatebases}: Ход работы можно посмотреть: ${env.BUILD_URL}",
-       to: '$DEFAULT_RECIPIENTS',
+       to: 'aantonchev@ivi.ru',
     )
 }
 
