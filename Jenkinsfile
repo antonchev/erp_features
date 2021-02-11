@@ -200,7 +200,7 @@ def notifyFailed() {
 
 
   emailext (
-      subject: "ОШИБКА: задача ${env.JOB_NAME}",
+      subject: "ОШИБКА: задача ${env.JOB_NAME} ${templatebases}",
       body: "ОШИБКА: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}] баз ${templatebases}: Ход работы можно посмотреть: ${env.BUILD_URL}",
        to: '$DEFAULT_RECIPIENTS',
     )
