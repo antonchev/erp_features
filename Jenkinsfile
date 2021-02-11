@@ -139,6 +139,7 @@ pipeline {
 
                                                                    returnCode = utils.cmd("oscript one_script_tools/checkconnectib.os -server ${server1c} -base ${testbase} ${admin1cUsrLine} ${admin1cPwdLine}")
                                                                       if (returnCode != 0) {
+                                                                      notifyFailed();
                                                                           utils.raiseError("Возникла ошибка при проверке ${base} в кластере ${server1c}")
                                                                       }
 
@@ -167,6 +168,7 @@ pipeline {
                 if (currentBuild.result == "ABORTED") {
                     return
                 }
+                notifySuccessful();
 
                 dir ('build/out/allure') {
                     writeFile file:'environment.properties', text:"Build=${env.BUILD_URL}"
@@ -177,6 +179,38 @@ pipeline {
         }
     }
 }
+
+
+def notifyFailed() {
+  slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+
+  hipchatSend (color: 'RED', notify: true,
+      message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+    )
+
+  emailext (
+      subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+      body: """<p>FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+        <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
+      recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+    )
+
+
+
+def notifySuccessful() {
+  slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+
+  hipchatSend (color: 'GREEN', notify: true,
+      message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+    )
+
+  emailext (
+      subject: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+      body: """<p>SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+        <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
+      recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+    )
+
 
 
 def dropDbTask(server1c, server1cPort, serverSql, infobase, admin1cUser, admin1cPwd, sqluser, sqlPwd) {
