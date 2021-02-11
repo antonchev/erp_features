@@ -137,7 +137,7 @@ pipeline {
                                                                   }
 
 
-                                                                   returnCode = utils.cmd("oscript one_script_tools/checkconnectib.os ${platformLine} -server ${server1c} -base ${testbase} ${admin1cUsrLine} ${admin1cPwdLine}")
+                                                                   returnCode = utils.cmd("oscript one_script_tools/checkconnectib.os -server ${server1c} -base ${testbase} ${admin1cUsrLine} ${admin1cPwdLine}")
                                                                       if (returnCode != 0) {
                                                                           utils.raiseError("Возникла ошибка при проверке ${base} в кластере ${server1c}")
                                                                       }
