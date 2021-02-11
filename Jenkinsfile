@@ -143,6 +143,7 @@ pipeline {
                                                                       if (returnCode != 0) {
                                                                       currentBuild.result = 'FAILURE'
                                                                       notifyFailed();
+                                                                      return
                                                                       } else notifySuccessful();
 
                                   }
