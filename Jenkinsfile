@@ -144,6 +144,7 @@ pipeline {
                                                                       notifyFailed();
 
                                                                       }
+                                                                      notifySuccessful();
 
                                   }
 
@@ -170,7 +171,7 @@ pipeline {
                 if (currentBuild.result == "ABORTED") {
                     return
                 }
-                notifySuccessful();
+
 
                 dir ('build/out/allure') {
                     writeFile file:'environment.properties', text:"Build=${env.BUILD_URL}"
@@ -188,9 +189,9 @@ def notifyStarted() {
 
   // send to email
   emailext (
-      subject: "Запущена: задача '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """Запущена: задача '${env.JOB_NAME} [${env.BUILD_NUMBER}]':
-        Ход работы можно посмотреть: ${env.BUILD_URL}""",
+      subject: "Запущена: задача ${env.JOB_NAME}",
+      body: "Запущена: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}]:
+        Ход работы можно посмотреть: ${env.BUILD_URL}",
       to: '$DEFAULT_RECIPIENTS',
     )
 }
@@ -200,9 +201,9 @@ def notifyFailed() {
 
 
   emailext (
-      subject: "ОШИБКА: задача '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """ОШИБКА: задача '${env.JOB_NAME} [${env.BUILD_NUMBER}]':
-       Ход работы можно посмотреть: ${env.BUILD_URL}""",
+      subject: "ОШИБКА: задача ${env.JOB_NAME}",
+      body: "ОШИБКА: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}]:
+       Ход работы можно посмотреть: ${env.BUILD_URL}",
        to: '$DEFAULT_RECIPIENTS',
     )
 }
@@ -211,9 +212,9 @@ def notifySuccessful() {
 
 
   emailext (
-      subject: "ВЫПОЛНЕНО: задача '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """ВЫПОЛНЕНО: задача '${env.JOB_NAME} [${env.BUILD_NUMBER}]':
-       Ход работы можно посмотреть: ${env.BUILD_URL}""",
+      subject: "ВЫПОЛНЕНО: задача ${env.JOB_NAME}",
+      body: "ВЫПОЛНЕНО: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}]:
+       Ход работы можно посмотреть: ${env.BUILD_URL}",
        to: '$DEFAULT_RECIPIENTS',
     )
 }
