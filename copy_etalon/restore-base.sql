@@ -115,7 +115,7 @@ SET @SQLString =
 
 	-- Выводим и выполняем полученную инструкцию
 	PRINT @SQLString
-	--EXEC sp_executesql @SQLString
+	EXEC sp_executesql @SQLString
 	PRINT @subject
 	PRINT @finalmassage
 
