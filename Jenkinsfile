@@ -46,25 +46,21 @@ pipeline {
             steps {
                 timestamps {
                     script {
-
-                    notifyStarted();
+                        notifyStarted();
                         templatebasesList = utils.lineToArray(templatebases.toLowerCase())
                         storages1cPathList = utils.lineToArray(storages1cPath.toLowerCase())
-
                         if (storages1cPathList.size() != 0) {
                             assert storages1cPathList.size() == templatebasesList.size()
                         }
-
                         server1c = server1c.isEmpty() ? "localhost" : server1c
                         serverSql = serverSql.isEmpty() ? "localhost" : serverSql
                         server1cPort = server1cPort.isEmpty() ? "1540" : server1cPort
                         agent1cPort = agent1cPort.isEmpty() ? "1541" : agent1cPort
                         env.sqlUser = sqlUser.isEmpty() ? "sa" : sqlUser
                         testbase = null
-
                         // создаем пустые каталоги
                         dir ('build') {
-                            writeFile file:'dummy', text:''
+                        writeFile file:'dummy', text:''
                         }
                     }
                 }
@@ -74,9 +70,8 @@ pipeline {
             steps {
                 timestamps {
                     script {
-
-                        for (i = 0;  i < templatebasesList.size(); i++) {
-                             for (j = 0;  j < var_steps.size(); j++) {
+                            for (i = 0;  i < templatebasesList.size(); i++) {
+                                for (j = 0;  j < var_steps.size(); j++) {
                             templateDb = templatebasesList[i]
                             storage1cPath = storages1cPathList[j]
                             testbase = "test_${templateDb}"
@@ -84,18 +79,17 @@ pipeline {
                             backupPath = "${env.WORKSPACE}/build/temp_${templateDb}_${utils.currentDateStamp()}"
                             day = var_steps[j]
                             // 1. Удаляем тестовую базу из кластера (если он там была) и очищаем клиентский кеш 1с
-                            timestamps {
-                                       stage("Удаление ${testbase}") {
-                                           projectHelpers = new ProjectHelpers()
-                                           utils = new Utils()
-
-                                           projectHelpers.dropDb(server1c, server1cPort, serverSql, testbase, admin1cUser, admin1cPwd, sqluser, sqlPwd)
+                    timestamps {
+                          stage("Удаление ${testbase}") {
+                                          projectHelpers = new ProjectHelpers()
+                                          utils = new Utils()
+                                          projectHelpers.dropDb(server1c, server1cPort, serverSql, testbase, admin1cUser, admin1cPwd, sqluser, sqlPwd)
                                        }
                                    }
 
                             // 3. Загружаем sql бекап эталонной базы в тестовую
                           stage("Востановление ${testbase} бекапа ${day}") {
-                                      timestamps {
+                                       timestamps {
                                           sqlUtils = new SqlUtils()
                                           utils = new Utils()
                                           date = utils.currentDateStampminusday(day)
@@ -103,9 +97,8 @@ pipeline {
                                           sqlUtils.restoreDb(serverSql, testbase, templateDb, sqlUser, sqlPwd,date)
                                       }
                                   }
-
                             // 4. Создаем тестовую базу кластере 1С
-                           stage("Создание базы ${testbase}") {
+                          stage("Создание базы ${testbase}") {
                                        timestamps {
                                             projectHelpers = new ProjectHelpers()
                                            try {
@@ -115,63 +108,47 @@ pipeline {
                                            }
                                        }
                                    }
-                            // 5. Обновляем тестовую базу из хранилища 1С (если применимо)
 
-                        stage("Тестирование базы ${testbase}") {
-                                  timestamps {
-                                    if (templatebasesList.size() == 0) {
-                                                                      return
-                                                                  }
+                          stage("Тестирование базы ${testbase}") {
+                                       timestamps {
+                                           if (templatebasesList.size() == 0) {return}
 
-                                                                  platform1cLine = ""
-                                                                  if (platform1c != null && !platform1c.isEmpty()) {
-                                                                      platform1cLine = "--v8version ${platform1c}"
-                                                                  }
+                                                 platform1cLine = ""
+                                                 if (platform1c != null && !platform1c.isEmpty()) {
+                                                     platform1cLine = "--v8version ${platform1c}"
+                                                 }
 
-                                                                  admin1cUsrLine = ""
-                                                                  if (admin1cUser != null && !admin1cUser.isEmpty()) {
-                                                                      admin1cUsrLine = "-user ${admin1cUser}"
-                                                                  }
+                                                  admin1cUsrLine = ""
+                                                  if (admin1cUser != null && !admin1cUser.isEmpty()) {
+                                                      admin1cUsrLine = "-user ${admin1cUser}"
+                                                  }
 
-                                                                  admin1cPwdLine = ""
-                                                                  if (admin1cPwd != null && !admin1cPwd.isEmpty()) {
-                                                                      admin1cPwdLine = "-passw ${admin1cPwd}"
-                                                                  }
+                                                  admin1cPwdLine = ""
+                                                  if (admin1cPwd != null && !admin1cPwd.isEmpty()) {
+                                                       admin1cPwdLine = "-passw ${admin1cPwd}"
+                                                  }
 
-
-                                                                   returnCode = utils.cmd("oscript one_script_tools/checkconnectib.os -server ${server1c} -base ${testbase} ${admin1cUsrLine} ${admin1cPwdLine}")
-                                                                      if (returnCode != 0) {
-                                                                      currentBuild.result = 'FAILURE'
-                                                                      notifyFailed();
-                                                                      return error
-                                                                      } else notifySuccessful();
-
-                                  }
-
-                                  }
-
-
-                         }   // 6. Запускаем внешнюю обработку 1С, которая очищает базу от всплывающего окна с тем, что база перемещена при старте 1С
-
-
-}
-
-
-
-
-                    }
-                }
-            }
-        }
-
-    }   
+                                                  returnCode = utils.cmd("oscript one_script_tools/checkconnectib.os -server ${server1c} -base ${testbase} ${admin1cUsrLine} ${admin1cPwdLine}")
+                                                  if (returnCode != 0) {
+                                                       currentBuild.result = 'FAILURE'
+                                                       notifyFailed();
+                                                       return error
+                                             } else notifySuccessful();
+                                           }
+                                         }
+                                       }
+                                     }
+                                   }
+                                 }
+                               }
+                             }
+                           }
     post {
         always {
             script {
                 if (currentBuild.result == "ABORTED") {
                     return
                 }
-
 
                 dir ('build/out/allure') {
                     writeFile file:'environment.properties', text:"Build=${env.BUILD_URL}"
@@ -185,9 +162,7 @@ pipeline {
 
 
 def notifyStarted() {
-  // send to Slack
-
-  // send to email
+   // send to email
   emailext (
       subject: "Запущена: задача ${env.JOB_NAME} ${templatebases}",
       body: "Запущена: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}] баз ${templatebases}: Ход работы можно посмотреть: ${env.BUILD_URL}",
@@ -197,8 +172,6 @@ def notifyStarted() {
 
 
 def notifyFailed() {
-
-
   emailext (
       subject: "ОШИБКА: задача ${env.JOB_NAME} ${templatebases}",
       body: "Ошибка: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}] баз ${templatebases}: Ход работы можно посмотреть: ${env.BUILD_URL}",
@@ -207,8 +180,6 @@ def notifyFailed() {
 }
 
 def notifySuccessful() {
-
-
   emailext (
       subject: "Выполнено: задача ${env.JOB_NAME} ${templatebases}",
       body: "Выполнено: задача ${env.JOB_NAME} [${env.BUILD_NUMBER}] баз ${templatebases}: Ход работы можно посмотреть: ${env.BUILD_URL}",
@@ -292,7 +263,6 @@ def updateDbTask(platform1c, infobase, storage1cPath, storageUser, storagePwd, c
                 if (storage1cPath == null || storage1cPath.isEmpty()) {
                     return
                 }
-
                 prHelpers.loadCfgFrom1CStorage(storage1cPath, storageUser, storagePwd, connString, admin1cUser, admin1cPwd, platform1c)
                 prHelpers.updateInfobase(connString, admin1cUser, admin1cPwd, platform1c)
             }
