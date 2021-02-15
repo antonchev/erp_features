@@ -216,6 +216,8 @@ def createDbTask(server1c, serverSql, platform1c, infobase) {
     }
 }
 
+
+
 def backupTask(serverSql, infobase, backupPath, sqlUser, sqlPwd) {
     return {
         stage("sql бекап ${infobase}") {
@@ -269,3 +271,4 @@ def updateDbTask(platform1c, infobase, storage1cPath, storageUser, storagePwd, c
         }
     }
 }
+
